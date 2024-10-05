@@ -1,4 +1,5 @@
 using DG.Tweening.Core.Easing;
+using System;
 using UnityEngine;
 
 public class ObjectivesHandler : MonoBehaviour
@@ -11,6 +12,9 @@ public class ObjectivesHandler : MonoBehaviour
 
     // Reference to the GameManager script
     [SerializeField] private GameManager gameManager;
+
+    [Header("Objectives Display")]
+    public GameObject objectivePF;
 
     private void Awake()
     {
@@ -29,6 +33,19 @@ public class ObjectivesHandler : MonoBehaviour
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
+        InitializeObjectives();
+    }
+
+    private void InitializeObjectives()
+    {
+        foreach(var objective in objectives.objectiveList)
+        {
+            GameObject obj = Instantiate(objectivePF, new Vector3(0,0, -0.2f), Quaternion.identity);
+            obj.GetComponent<ObjectiveDataContainer>().objectiveData = objective;
+            objective.isCompleted = false;
+            objective.currentCompletedGoal = 0;
+            obj.transform.SetParent(gameObject.transform, false);
+        }
     }
 
     // Method to update the current completed goal of an objective

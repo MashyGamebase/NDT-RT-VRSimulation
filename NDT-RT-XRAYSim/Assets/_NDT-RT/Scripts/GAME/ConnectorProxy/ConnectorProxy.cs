@@ -1,5 +1,6 @@
 using HPhysic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public enum ConnectionType
 {
@@ -14,10 +15,9 @@ public class ConnectorProxy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.GetComponent<ItemObject>())
+        if (other.gameObject.GetComponent<XRGrabInteractable>())
         {
-            ItemObject interacted = other.gameObject.GetComponent<ItemObject>();
-            if (!interacted.isInteracted)
+            if (!other.gameObject.GetComponent<XRGrabInteractable>().isSelected)
             {
                 if (other.gameObject.GetComponent<Connector>())
                 {
@@ -53,6 +53,22 @@ public class ConnectorProxy : MonoBehaviour
                             GetSourceImage.ToggleCamera(false);
                             break;
                     }
+                }
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.GetComponent<XRGrabInteractable>())
+        {
+            if (other.gameObject.GetComponent<XRGrabInteractable>().isSelected)
+            {
+                if (other.gameObject.GetComponent<Connector>())
+                {
+                    Connector otherConnector = other.gameObject.GetComponent<Connector>();
+                    GetComponent<Connector>().Disconnect(otherConnector);
+                    otherConnector.Disconnect(this.GetComponent<Connector>());
                 }
             }
         }

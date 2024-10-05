@@ -2,10 +2,10 @@ using UnityEngine;
 
 public abstract class Item : MonoBehaviour
 {
-    [SerializeField] private string _itemName;
-    [SerializeField] private float _itemWeight;
-    [SerializeField] private float _itemSize;
-    [SerializeField] private string _itemFlaw;
+    [SerializeField] internal string _itemName;
+    [SerializeField] internal float _itemWeight;
+    [SerializeField] internal float _itemSize;
+    [SerializeField] internal string _itemFlaw;
 
     public string ItemName => _itemName;
     public float ItemWeight => _itemWeight;

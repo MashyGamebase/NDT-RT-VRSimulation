@@ -6,15 +6,22 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 {
+    [Header("Image Output Prefab")]
+    [SerializeField] private GameObject xrayImageOutputPF;
+    [SerializeField] private Transform spawnPosition;
+
     [Header("Capture Properties")]
     public string FileName;
     public RenderTexture RT;
     public GameObject renderCamera;
-    public List<RawImage> rawImage;
     public GameObject subject;
+
+    public XRGrabInteractable parentObject;
+    public InputActionReference triggerAction;
 
     [SerializeField] private ItemObject cameraInstance;
 
@@ -26,15 +33,24 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     {
         powerIndicator.material.color = Color.red;
         cameraIndicator.material.color = Color.red;
+
+        triggerAction.action.performed += OnTriggerActionPerformed;
+    }
+
+    private void OnDisable()
+    {
+        triggerAction.action.performed -= OnTriggerActionPerformed;
     }
 
     #region INPUT_CALLBACK
-    public void OnCapture(InputAction.CallbackContext context)
+    private void OnTriggerActionPerformed(InputAction.CallbackContext context)
     {
-        if (context.performed && cameraInstance.isInteracted && isPowerConnected && isCameraConnected)
+        if (parentObject.isSelected)
         {
-            GetSetImageButton();
+            if(isPowerConnected && isCameraConnected)
+                GetSetImageButton();
         }
+
     }
     #endregion
 
@@ -113,8 +129,11 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
         texture2D.LoadImage(bytes);
         texture2D.Apply();
-        foreach(var image in rawImage)
-            image.texture = texture2D;
+
+        GameObject obj = Instantiate(xrayImageOutputPF, spawnPosition.position, Quaternion.Euler(new Vector3(90f, 0, 0)));
+        obj.GetComponent<NDTOutputHolder>().outputImage.gameObject.SetActive(true);
+        obj.GetComponent<NDTOutputHolder>().outputImage.texture = texture2D;
+        obj.GetComponent<NDTOutputHolder>().canvas.worldCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
     }
 
     
@@ -124,14 +143,14 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         yield return new WaitForSeconds(0.001f);
         GetImage();
         yield return new WaitForSeconds(0.1f);
-        foreach (var image in rawImage)
-            image.gameObject.SetActive(true);
+        //--
         yield return new WaitForSeconds(0.2f);
         SetImage();
         yield return new WaitForSeconds(0.3f);
         renderCamera.SetActive(false);
     }
 
+    [ContextMenu("GetSetImage")]
     public void GetSetImageButton()
     {
         StartCoroutine(RenderProcess());

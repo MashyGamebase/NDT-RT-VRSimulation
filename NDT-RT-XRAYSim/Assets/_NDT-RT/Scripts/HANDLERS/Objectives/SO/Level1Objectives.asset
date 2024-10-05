@@ -13,11 +13,7 @@ MonoBehaviour:
   m_Name: Level1Objectives
   m_EditorClassIdentifier: 
   objectiveList:
-  - objectiveName: 
-    objectiveGoal: 0
-    currentCompletedGoal: 0
-    isCompleted: 0
-  - objectiveName: 
-    objectiveGoal: 0
+  - objectiveName: Inspect 3 items
+    objectiveGoal: 3
     currentCompletedGoal: 0
     isCompleted: 0
