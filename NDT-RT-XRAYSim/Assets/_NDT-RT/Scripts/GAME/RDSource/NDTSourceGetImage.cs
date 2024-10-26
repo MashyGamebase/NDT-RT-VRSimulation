@@ -14,6 +14,9 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     [SerializeField] private GameObject xrayImageOutputPF;
     [SerializeField] private Transform spawnPosition;
 
+    [Header("Radiation fill indicator")]
+    [SerializeField] private Image radiationFill;
+
     [Header("Capture Properties")]
     public string FileName;
     public RenderTexture RT;
@@ -26,6 +29,10 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     [SerializeField] private ItemObject cameraInstance;
 
     public bool isPowerConnected = false, isCameraConnected = false;
+
+    const float crankTarget = 10f;
+    public float crankPower = 0f;
+    
 
     public MeshRenderer powerIndicator, cameraIndicator;
 
@@ -47,7 +54,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     {
         if (parentObject.isSelected)
         {
-            if(isPowerConnected && isCameraConnected)
+            if(isPowerConnected && isCameraConnected && crankPower >= crankTarget)
                 GetSetImageButton();
         }
 
@@ -69,6 +76,24 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         cameraIndicator.material.color = toggle ? Color.green : Color.red;
     }
     #endregion
+
+    public void AddCrankPower(float power)
+    {
+        if (!isPowerConnected) return;
+
+        if (crankPower < crankTarget)
+        {
+            crankPower += power;
+            crankPower = Mathf.Clamp(crankPower, 0, crankTarget); // Ensure crankPower doesn't exceed crankTarget
+            UpdateRadiationFill();
+        }
+    }
+
+    void UpdateRadiationFill()
+    {
+        float fillAmount = crankPower / crankTarget;
+        radiationFill.fillAmount = fillAmount; // Update the UI fill
+    }
 
     public void GetImage()
     {
@@ -140,6 +165,8 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     IEnumerator RenderProcess()
     {
         renderCamera.SetActive(true);
+        crankPower = 0;
+        UpdateRadiationFill();
         yield return new WaitForSeconds(0.001f);
         GetImage();
         yield return new WaitForSeconds(0.1f);
