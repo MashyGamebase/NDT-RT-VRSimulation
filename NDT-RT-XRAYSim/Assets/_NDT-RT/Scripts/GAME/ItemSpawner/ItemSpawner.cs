@@ -9,6 +9,7 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField] private List<GameObject> items = new List<GameObject>();
     [SerializeField] private Transform spawnPosition;
 
+    [ContextMenu("Spawn Items")]
     public void SpawnItem()
     {
         GameObject obj = Instantiate(itemPF, spawnPosition.position, Quaternion.identity);
