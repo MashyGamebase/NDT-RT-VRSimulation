@@ -14,6 +14,8 @@ public class GeigerCounter : MonoBehaviour
     private AudioSource audioSource;
     private AudioClip currentClip;
 
+    private NDTSourceGetImage source => NDTSourceGetImage.Instance;
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -21,6 +23,12 @@ public class GeigerCounter : MonoBehaviour
 
     private void Update()
     {
+        if (!source.hasRadiation)
+        {
+            StopRadiationClip();
+            return;
+        }
+
         float distance = Vector3.Distance(transform.position, radiationSource.position);
 
         // Determine which audio to play based on distance

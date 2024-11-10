@@ -30,6 +30,22 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
     public bool isPowerConnected = false, isCameraConnected = false;
 
+    [SerializeField] private Light gammaRayLight;
+    public bool hasRadiation
+    {
+        get
+        {
+            if(gammaRayLight.intensity > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
     const float crankTarget = 10f;
     public float crankPower = 0f;
     
@@ -77,6 +93,12 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     }
     #endregion
 
+    [ContextMenu("Debug: CrankPower")]
+    public void DebugCrankPower()
+    {
+        AddCrankPower(1);
+    }
+
     public void AddCrankPower(float power)
     {
         if (!isPowerConnected) return;
@@ -86,6 +108,21 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
             crankPower += power;
             crankPower = Mathf.Clamp(crankPower, 0, crankTarget); // Ensure crankPower doesn't exceed crankTarget
             UpdateRadiationFill();
+
+            if(gammaRayLight.intensity <= 0)
+            {
+                gammaRayLight.intensity = Mathf.Lerp(gammaRayLight.intensity, (gammaRayLight.intensity + 0.5f), Time.deltaTime * 1);
+            }
+            else if(gammaRayLight.intensity <= 0.5f)
+            {
+                gammaRayLight.intensity += 0.5f;
+            }
+        }
+        else
+        {
+            // The reset function will be on the yes button when the specimen is submitted
+            FindObjectOfType<CrankIncrementTrigger>().gameObject.GetComponent<Collider>().enabled = false;
+            StartCoroutine(RadiationDissipateCO());
         }
     }
 
@@ -93,6 +130,20 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     {
         float fillAmount = crankPower / crankTarget;
         radiationFill.fillAmount = fillAmount; // Update the UI fill
+    }
+
+    IEnumerator RadiationDissipateCO()
+    {
+        int radiationCooldown = 60;
+
+        while(radiationCooldown > 0)
+        {
+            radiationCooldown -= 1;
+            gammaRayLight.intensity = Mathf.Lerp(gammaRayLight.intensity, (gammaRayLight.intensity - 0.008f), Time.deltaTime * 1);
+            yield return new WaitForSeconds(1);
+        }
+
+        gammaRayLight.intensity = 0;
     }
 
     public void GetImage()
