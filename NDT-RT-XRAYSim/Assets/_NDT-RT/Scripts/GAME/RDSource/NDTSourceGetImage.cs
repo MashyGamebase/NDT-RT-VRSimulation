@@ -101,7 +101,11 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
     public void AddCrankPower(float power)
     {
-        if (!isPowerConnected) return;
+        if (!isPowerConnected) 
+            return;
+
+        if (!isCameraConnected)
+            return;
 
         if (crankPower < crankTarget)
         {

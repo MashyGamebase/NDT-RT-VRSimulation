@@ -11,6 +11,9 @@ public class CrankIncrementTrigger : MonoBehaviour
     {
         if(other.gameObject.tag == "Crank")
         {
+            if (!source.isCameraConnected && !source.isPowerConnected)
+                return;
+
             source.AddCrankPower(powerAmp);
         }
     }
