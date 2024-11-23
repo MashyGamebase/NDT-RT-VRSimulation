@@ -14,7 +14,14 @@ public class FilmStickOn : MonoBehaviour
             {
                 otherFilm = other.gameObject;
                 otherFilm.gameObject.SetActive(false);
+                NDTSourceGetImage.Instance.isFilmOn = true;
             }
         }
+    }
+
+    public void DettachFilm()
+    {
+        wrappedFilm.SetActive(false);
+        otherFilm.gameObject.SetActive(true);
     }
 }

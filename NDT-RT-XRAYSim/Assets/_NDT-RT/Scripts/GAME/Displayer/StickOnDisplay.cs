@@ -1,32 +1,52 @@
+using MyBox;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class StickOnDisplay : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> gameObjectsAttached = new List<GameObject>();
+    public GameObject attachedImage;
+    public Transform attachTransform;
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Image")
+        if (other.CompareTag("Image"))
         {
-            other.gameObject.transform.SetParent(transform, false);
-            other.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            other.gameObject.GetComponent<Rigidbody>().useGravity = false;
-
-            gameObjectsAttached.Add(other.gameObject);
+            XRGrabInteractable image = other.gameObject.GetComponent<XRGrabInteractable>();
+            if(image != null)
+            {
+                if (!image.isSelected)
+                {
+                    attachedImage = other.gameObject;
+                    attachedImage.gameObject.GetComponent<Rigidbody>().useGravity = false;
+                }
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Image")
+        if (other.CompareTag("Image"))
         {
-            other.gameObject.transform.SetParent(null, false);
-            other.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-            other.gameObject.GetComponent<Rigidbody>().useGravity = true;
+            XRGrabInteractable image = other.gameObject.GetComponent<XRGrabInteractable>();
+            if (image != null)
+            {
+                if (!image.isSelected)
+                {
+                    attachedImage.gameObject.GetComponent<Rigidbody>().useGravity = true;
+                    attachedImage = null;
+                }
+            }
+        }
+    }
 
-            gameObjectsAttached.Remove(other.gameObject);
+    private void Update()
+    {
+        if(attachedImage != null)
+        {
+            attachedImage.gameObject.transform.position = attachTransform.position;
+            attachedImage.gameObject.transform.rotation = attachTransform.rotation;
         }
     }
 }

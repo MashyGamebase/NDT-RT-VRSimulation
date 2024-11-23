@@ -28,7 +28,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
     [SerializeField] private ItemObject cameraInstance;
 
-    public bool isPowerConnected = false, isCameraConnected = false;
+    public bool isPowerConnected = false, isCameraConnected = false, isFilmOn = false;
 
     [SerializeField] private Light gammaRayLight;
     public bool hasRadiation
@@ -68,12 +68,13 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     #region INPUT_CALLBACK
     private void OnTriggerActionPerformed(InputAction.CallbackContext context)
     {
+        /*
         if (parentObject.isSelected)
         {
             if(isPowerConnected && isCameraConnected && crankPower >= crankTarget)
                 GetSetImageButton();
         }
-
+        */
     }
     #endregion
 
@@ -126,6 +127,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         {
             // The reset function will be on the yes button when the specimen is submitted
             FindObjectOfType<CrankIncrementTrigger>().gameObject.GetComponent<Collider>().enabled = false;
+            GetSetImageButton();
             StartCoroutine(RadiationDissipateCO());
         }
     }
