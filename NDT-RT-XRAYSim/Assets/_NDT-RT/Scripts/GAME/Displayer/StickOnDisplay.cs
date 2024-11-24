@@ -9,6 +9,9 @@ public class StickOnDisplay : MonoBehaviour
     public GameObject attachedImage;
     public Transform attachTransform;
 
+    public GameObject dataSheet;
+    public GameObject YNInteractor;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Image"))
@@ -20,6 +23,8 @@ public class StickOnDisplay : MonoBehaviour
                 {
                     attachedImage = other.gameObject;
                     attachedImage.gameObject.GetComponent<Rigidbody>().useGravity = false;
+                    dataSheet.SetActive(true);
+                    YNInteractor.SetActive(true);
                 }
             }
         }

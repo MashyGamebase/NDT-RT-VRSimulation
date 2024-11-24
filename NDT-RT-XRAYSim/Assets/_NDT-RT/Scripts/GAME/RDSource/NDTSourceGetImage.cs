@@ -30,6 +30,12 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
     public bool isPowerConnected = false, isCameraConnected = false, isFilmOn = false;
 
+    public RawImage outputImage;
+    public List<Texture2D> outputImages;
+    public List<OutputData> outputData;
+
+    public int SelectedSpecimen;
+
     [SerializeField] private Light gammaRayLight;
     public bool hasRadiation
     {
@@ -127,9 +133,28 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         {
             // The reset function will be on the yes button when the specimen is submitted
             FindObjectOfType<CrankIncrementTrigger>().gameObject.GetComponent<Collider>().enabled = false;
-            GetSetImageButton();
+            //GetSetImageButton();
+            RandomizeOutput();
             StartCoroutine(RadiationDissipateCO());
         }
+    }
+
+    [ContextMenu("Test Random Image Set")]
+    public void RandomizeOutput()
+    {
+        int rand = UnityEngine.Random.Range(0, outputImages.Count);
+        SelectedSpecimen = rand;
+
+        OutputDataHolder.Instance.SetData(
+            outputData[rand].specimenName,
+            outputData[rand].materialName,
+            outputData[rand].dimensionsName,
+            outputData[rand].lengthName,
+            outputData[rand].standardsName,
+            outputData[rand].dwellTimeName
+            );
+
+        outputImage.texture = outputImages[rand];
     }
 
     void UpdateRadiationFill()
