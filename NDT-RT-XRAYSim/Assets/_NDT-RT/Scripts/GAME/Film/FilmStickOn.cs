@@ -7,6 +7,9 @@ public class FilmStickOn : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (NDTSourceGetImage.Instance.isFilmGenerated)
+            return;
+
         if(other.gameObject.tag == "Image")
         {
             wrappedFilm.SetActive(true);
@@ -23,5 +26,6 @@ public class FilmStickOn : MonoBehaviour
     {
         wrappedFilm.SetActive(false);
         otherFilm.gameObject.SetActive(true);
+        Debug.Log("Dettached image");
     }
 }

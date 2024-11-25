@@ -14,6 +14,9 @@ public class GeigerCounter : MonoBehaviour
     private AudioSource audioSource;
     private AudioClip currentClip;
 
+    public Transform playerTransform;
+    public GameObject VFX;
+
     private NDTSourceGetImage source => NDTSourceGetImage.Instance;
 
     private void Start()
@@ -48,6 +51,13 @@ public class GeigerCounter : MonoBehaviour
         {
             StopRadiationClip();
         }
+    }
+
+    public void AttachToPlayer()
+    {
+        gameObject.transform.position = playerTransform.position;
+        gameObject.transform.SetParent(playerTransform, false);
+        VFX.SetActive(false);
     }
 
     private void PlayRadiationClip(AudioClip clip)

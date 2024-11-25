@@ -33,15 +33,19 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     public RawImage outputImage;
     public List<Texture2D> outputImages;
     public List<OutputData> outputData;
+    public bool isFilmGenerated = false;
 
     public int SelectedSpecimen;
 
-    [SerializeField] private Light gammaRayLight;
+    [SerializeField] private float gammaRayLight;
+
+    public OutputDataHolder dataHolder;
+
     public bool hasRadiation
     {
         get
         {
-            if(gammaRayLight.intensity > 0)
+            if(gammaRayLight > 0)
             {
                 return true;
             }
@@ -120,13 +124,13 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
             crankPower = Mathf.Clamp(crankPower, 0, crankTarget); // Ensure crankPower doesn't exceed crankTarget
             UpdateRadiationFill();
 
-            if(gammaRayLight.intensity <= 0)
+            if(gammaRayLight <= 0)
             {
-                gammaRayLight.intensity = Mathf.Lerp(gammaRayLight.intensity, (gammaRayLight.intensity + 0.5f), Time.deltaTime * 1);
+                gammaRayLight += 0.5f;
             }
-            else if(gammaRayLight.intensity <= 0.5f)
+            else if(gammaRayLight <= 0.5f)
             {
-                gammaRayLight.intensity += 0.5f;
+                gammaRayLight += 0.5f;
             }
         }
         else
@@ -145,7 +149,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         int rand = UnityEngine.Random.Range(0, outputImages.Count);
         SelectedSpecimen = rand;
 
-        OutputDataHolder.Instance.SetData(
+        dataHolder.SetData(
             outputData[rand].specimenName,
             outputData[rand].materialName,
             outputData[rand].dimensionsName,
@@ -155,6 +159,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
             );
 
         outputImage.texture = outputImages[rand];
+        isFilmGenerated = true;
     }
 
     void UpdateRadiationFill()
@@ -170,11 +175,11 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         while(radiationCooldown > 0)
         {
             radiationCooldown -= 1;
-            gammaRayLight.intensity = Mathf.Lerp(gammaRayLight.intensity, (gammaRayLight.intensity - 0.008f), Time.deltaTime * 1);
+            gammaRayLight = Mathf.Lerp(gammaRayLight, (gammaRayLight - 0.008f), Time.deltaTime * 1);
             yield return new WaitForSeconds(1);
         }
 
-        gammaRayLight.intensity = 0;
+        gammaRayLight = 0;
     }
 
     public void GetImage()
