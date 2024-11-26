@@ -8,6 +8,7 @@ TagManager:
   - Crank
   - Image
   - Nozzle
+  - IQI
   layers:
   - Default
   - TransparentFX

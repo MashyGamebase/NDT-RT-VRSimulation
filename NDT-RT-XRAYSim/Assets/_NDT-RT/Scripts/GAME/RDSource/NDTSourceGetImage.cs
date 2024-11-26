@@ -28,7 +28,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
     [SerializeField] private ItemObject cameraInstance;
 
-    public bool isPowerConnected = false, isCameraConnected = false, isFilmOn = false;
+    public bool isPowerConnected = false, isCameraConnected = false, isFilmOn = false, isPlayerIn = false, isIQIOn = false;
 
     public RawImage outputImage;
     public List<Texture2D> outputImages;
@@ -38,23 +38,10 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
     public int SelectedSpecimen;
 
     [SerializeField] private float gammaRayLight;
-
+    public ParticleSystem radiationCloud;
     public OutputDataHolder dataHolder;
 
-    public bool hasRadiation
-    {
-        get
-        {
-            if(gammaRayLight > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
+    public bool hasRadiation;
 
     const float crankTarget = 10f;
     public float crankPower = 0f;
@@ -118,11 +105,27 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         if (!isCameraConnected)
             return;
 
+        if (!isFilmOn)
+            return;
+
+        if (!isPlayerIn)
+            return;
+
+        if (!isIQIOn)
+            return;
+
         if (crankPower < crankTarget)
         {
             crankPower += power;
             crankPower = Mathf.Clamp(crankPower, 0, crankTarget); // Ensure crankPower doesn't exceed crankTarget
             UpdateRadiationFill();
+
+            if (!radiationCloud.gameObject.activeInHierarchy)
+            {
+                radiationCloud.gameObject.SetActive(true);
+                radiationCloud.Play();
+                hasRadiation = true;
+            }
 
             if(gammaRayLight <= 0)
             {
@@ -179,7 +182,10 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
             yield return new WaitForSeconds(1);
         }
 
+        radiationCloud.gameObject.SetActive(false);
+        radiationCloud.Stop();
         gammaRayLight = 0;
+        hasRadiation = false;
     }
 
     public void GetImage()

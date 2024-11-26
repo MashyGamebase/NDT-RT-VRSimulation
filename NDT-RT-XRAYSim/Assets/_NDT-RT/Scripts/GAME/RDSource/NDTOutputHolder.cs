@@ -12,6 +12,8 @@ public class NDTOutputHolder : MonoBehaviour
     //[SerializeField] private bool generated = false;
     [SerializeField] private float filmGenerationTime = 2f;
 
+    public bool canBeStickedOn = false;
+
     public void RemoveLayer(float percent)
     {
         Debug.LogWarning("Generating...");
@@ -20,6 +22,10 @@ public class NDTOutputHolder : MonoBehaviour
         outputImage.DOFade(percent, filmGenerationTime).OnComplete(() =>
         {
             //generated = true;
+            if(outputImage.color.a == 1)
+            {
+                canBeStickedOn = true;
+            }
         });
 
         float currentFilmPercent = filmLayer.alpha;

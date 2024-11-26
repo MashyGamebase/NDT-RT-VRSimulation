@@ -32,7 +32,7 @@ public class GeigerCounter : MonoBehaviour
             return;
         }
 
-        float distance = Vector3.Distance(transform.position, radiationSource.position);
+        float distance = Vector3.Distance(playerTransform.position, radiationSource.position);
 
         // Determine which audio to play based on distance
         if (distance <= highThreshold)
@@ -55,8 +55,6 @@ public class GeigerCounter : MonoBehaviour
 
     public void AttachToPlayer()
     {
-        gameObject.transform.position = playerTransform.position;
-        gameObject.transform.SetParent(playerTransform, false);
         VFX.SetActive(false);
     }
 
