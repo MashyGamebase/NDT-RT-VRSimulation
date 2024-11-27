@@ -8,10 +8,15 @@ public class ScoreKeeper : MonoBehaviour
     private TMP_Text playerScoreText;
     [SerializeField]
     private TMP_Text specimenTestedText;
+    [SerializeField]
+    private TMP_Text exposureTimeText;
+    [SerializeField]
+    private TMP_Text totalDuration;
 
     // Score System
     private int score;
     private int specimenCompleted;
+    private float totalExposure;
     [SerializeField] private float scoreMultiplier = 2;
 
     private NDTSourceGetImage source => NDTSourceGetImage.Instance;
@@ -44,6 +49,29 @@ public class ScoreKeeper : MonoBehaviour
             int i = 0;
             specimenTestedText.text = i.ToString("D2");
         }
+
+        if (PlayerPrefs.HasKey("TotalDuration"))
+        {
+            totalDuration.text = PlayerPrefs.GetString("TotalDuration");
+        }
+        else
+        {
+            totalDuration.text = "00:00";
+        }
+
+        if (PlayerPrefs.HasKey("TotalExposure"))
+        {
+            exposureTimeText.text = PlayerPrefs.GetFloat("TotalExposure").ToString("0.00") + "%";
+        }
+        else
+        {
+            exposureTimeText.text = "0%";
+        }
+    }
+
+    public void AddExposure(float exposure, float multiplier)
+    {
+        totalExposure += (exposure * multiplier);
     }
 
     public void SaveAndStoreScore()
@@ -63,6 +91,19 @@ public class ScoreKeeper : MonoBehaviour
 
         score += scoreToAdd;
         PlayerPrefs.SetInt("PlayerScore", score);
+
+        PlayerPrefs.SetString("TotalDuration", GetFormattedElapsedTime(elapsedTime));
+        PlayerPrefs.SetFloat("TotalExposure", totalExposure);
+
         PlayerPrefs.Save();
+    }
+
+    public string GetFormattedElapsedTime(float elapsedTime)
+    {
+        int minutes = Mathf.FloorToInt(elapsedTime / 60); // Calculate total minutes
+        int seconds = Mathf.FloorToInt(elapsedTime % 60); // Calculate remaining seconds
+
+        // Format the string as "MM:SS"
+        return string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 }

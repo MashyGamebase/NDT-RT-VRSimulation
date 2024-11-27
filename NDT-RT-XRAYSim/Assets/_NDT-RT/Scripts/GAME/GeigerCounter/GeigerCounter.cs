@@ -1,8 +1,13 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class GeigerCounter : MonoBehaviour
 {
+    public Threshold threshold;
+
+    public ScoreKeeper scoreKeeper;
+
     public Transform radiationSource; // Reference to the radiation source
     public AudioClip lowRadiationClip; // Low radiation audio
     public AudioClip mediumRadiationClip; // Medium radiation audio
@@ -29,6 +34,7 @@ public class GeigerCounter : MonoBehaviour
         if (!source.hasRadiation)
         {
             StopRadiationClip();
+            threshold = Threshold.None;
             return;
         }
 
@@ -38,18 +44,49 @@ public class GeigerCounter : MonoBehaviour
         if (distance <= highThreshold)
         {
             PlayRadiationClip(highRadiationClip);
+            threshold = Threshold.High;
         }
         else if (distance <= mediumThreshold)
         {
             PlayRadiationClip(mediumRadiationClip);
+            threshold = Threshold.Medium;
         }
         else if (distance <= lowThreshold)
         {
             PlayRadiationClip(lowRadiationClip);
+            threshold = Threshold.Low;
         }
         else
         {
+            threshold = Threshold.Low;
             StopRadiationClip();
+        }
+    }
+
+    IEnumerator UpdateAfterSecond()
+    {
+        while (true)
+        {
+            if (!source.hasRadiation)
+            {
+                yield return null;
+            }
+            else
+            {
+                switch (threshold)
+                {
+                    case Threshold.High:
+                        scoreKeeper.AddExposure(0.05f, 3f);
+                        break;
+                    case Threshold.Medium:
+                        scoreKeeper.AddExposure(0.05f, 2f);
+                        break;
+                    case Threshold.Low:
+                        scoreKeeper.AddExposure(0.05f, 1f);
+                        break;
+                }
+                yield return new WaitForSeconds(1);
+            }
         }
     }
 
@@ -76,4 +113,12 @@ public class GeigerCounter : MonoBehaviour
             currentClip = null;
         }
     }
+}
+
+public enum Threshold
+{
+    None,
+    Low,
+    Medium,
+    High
 }
