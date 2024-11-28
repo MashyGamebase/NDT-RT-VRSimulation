@@ -179,6 +179,7 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
         {
             radiationCooldown -= 1;
             gammaRayLight = Mathf.Lerp(gammaRayLight, (gammaRayLight - 0.008f), Time.deltaTime * 1);
+            radiationFill.fillAmount = Mathf.Lerp(radiationFill.fillAmount, (radiationFill.fillAmount - 0.05f), Time.deltaTime * 1);
             yield return new WaitForSeconds(1);
         }
 
