@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using TMPro;
 
 public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 {
@@ -45,7 +46,8 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
 
     const float crankTarget = 10f;
     public float crankPower = 0f;
-    
+
+    public TMP_Text radiationLeftText;
 
     public MeshRenderer powerIndicator, cameraIndicator;
 
@@ -180,6 +182,10 @@ public class NDTSourceGetImage : Singleton<NDTSourceGetImage>
             radiationCooldown -= 1;
             gammaRayLight = Mathf.Lerp(gammaRayLight, (gammaRayLight - 0.008f), Time.deltaTime * 1);
             radiationFill.fillAmount = Mathf.Lerp(radiationFill.fillAmount, (radiationFill.fillAmount - 0.05f), Time.deltaTime * 1);
+
+            string formattedTime = $"{radiationCooldown / 60:D2}:{radiationCooldown % 60:D2}";
+            radiationLeftText.text = formattedTime;
+
             yield return new WaitForSeconds(1);
         }
 

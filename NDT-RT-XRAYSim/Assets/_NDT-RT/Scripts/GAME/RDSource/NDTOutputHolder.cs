@@ -10,16 +10,15 @@ public class NDTOutputHolder : MonoBehaviour
     public Canvas canvas;
     public CanvasGroup filmLayer;
     //[SerializeField] private bool generated = false;
-    [SerializeField] private float filmGenerationTime = 2f;
 
     public bool canBeStickedOn = false;
 
-    public void RemoveLayer(float percent)
+    public void RemoveLayer(float percent, float generationTime)
     {
         Debug.LogWarning("Generating...");
         //if (generated) return;
 
-        outputImage.DOFade(percent, filmGenerationTime).OnComplete(() =>
+        outputImage.DOFade(percent, generationTime).OnComplete(() =>
         {
             //generated = true;
             if(outputImage.color.a == 1)
@@ -30,6 +29,6 @@ public class NDTOutputHolder : MonoBehaviour
 
         float currentFilmPercent = filmLayer.alpha;
 
-        filmLayer.DOFade((currentFilmPercent - percent), filmGenerationTime);
+        filmLayer.DOFade((currentFilmPercent - percent), generationTime);
     }
 }

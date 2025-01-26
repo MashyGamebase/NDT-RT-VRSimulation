@@ -27,16 +27,19 @@ public class GeigerCounter : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        StartCoroutine(UpdateAfterSecond());
     }
 
     private void Update()
     {
+        /* It will always play the audio regardless if the source has any radiation or not
         if (!source.hasRadiation)
         {
             StopRadiationClip();
             threshold = Threshold.None;
             return;
         }
+        */
 
         float distance = Vector3.Distance(playerTransform.position, radiationSource.position);
 
@@ -65,6 +68,7 @@ public class GeigerCounter : MonoBehaviour
 
     IEnumerator UpdateAfterSecond()
     {
+        // Exposure levels determines how much the player has had exposure
         while (true)
         {
             if (!source.hasRadiation)
